@@ -23,7 +23,6 @@ export default async function DashboardPage() {
     .from('caption_votes')
     .select('*', { count: 'exact', head: true })
 
-  // Get vote data
   const { data: voteData } = await supabase
     .from('caption_votes')
     .select('vote_value')
@@ -31,7 +30,6 @@ export default async function DashboardPage() {
   const upvotes = voteData?.filter(v => v.vote_value === 1).length || 0
   const downvotes = voteData?.filter(v => v.vote_value === -1).length || 0
 
-  // Get recent images
   const { data: recentImages } = await supabase
     .from('images')
     .select('url, created_datetime_utc')
@@ -78,32 +76,144 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Charts */}
         <StatsCharts upvotes={upvotes} downvotes={downvotes} />
 
-        {/* Navigation Cards */}
+        {/* Main Navigation */}
+        <h2 className="text-2xl font-bold text-white mb-4 mt-8">Content Management</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link href="/users">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
               <div className="text-4xl mb-4">👥</div>
-              <h3 className="text-xl font-bold text-white mb-2">Manage Users</h3>
-              <p className="text-gray-400">View user profiles</p>
+              <h3 className="text-xl font-bold text-white mb-2">Users</h3>
+              <p className="text-gray-400 text-sm">View user profiles</p>
             </div>
           </Link>
 
           <Link href="/images">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
               <div className="text-4xl mb-4">🖼️</div>
-              <h3 className="text-xl font-bold text-white mb-2">Manage Images</h3>
-              <p className="text-gray-400">CRUD operations</p>
+              <h3 className="text-xl font-bold text-white mb-2">Images</h3>
+              <p className="text-gray-400 text-sm">CRUD operations</p>
             </div>
           </Link>
 
           <Link href="/captions">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
               <div className="text-4xl mb-4">💬</div>
-              <h3 className="text-xl font-bold text-white mb-2">View Captions</h3>
-              <p className="text-gray-400">Browse captions</p>
+              <h3 className="text-xl font-bold text-white mb-2">Captions</h3>
+              <p className="text-gray-400 text-sm">Browse captions</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Humor System */}
+        <h2 className="text-2xl font-bold text-white mb-4 mt-8">Humor System</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Link href="/humor-flavors">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🎭</div>
+              <h3 className="text-xl font-bold text-white mb-2">Humor Flavors</h3>
+              <p className="text-gray-400 text-sm">Read flavors</p>
+            </div>
+          </Link>
+
+          <Link href="/humor-flavor-steps">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">📊</div>
+              <h3 className="text-xl font-bold text-white mb-2">Flavor Steps</h3>
+              <p className="text-gray-400 text-sm">Read steps</p>
+            </div>
+          </Link>
+
+          <Link href="/humor-flavor-mix">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🎨</div>
+              <h3 className="text-xl font-bold text-white mb-2">Humor Mix</h3>
+              <p className="text-gray-400 text-sm">Read/Update mix</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Caption System */}
+        <h2 className="text-2xl font-bold text-white mb-4 mt-8">Caption System</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Link href="/caption-requests">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">📝</div>
+              <h3 className="text-xl font-bold text-white mb-2">Caption Requests</h3>
+              <p className="text-gray-400 text-sm">Read requests</p>
+            </div>
+          </Link>
+
+          <Link href="/caption-examples">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">📋</div>
+              <h3 className="text-xl font-bold text-white mb-2">Caption Examples</h3>
+              <p className="text-gray-400 text-sm">CRUD examples</p>
+            </div>
+          </Link>
+
+          <Link href="/terms">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">📖</div>
+              <h3 className="text-xl font-bold text-white mb-2">Terms</h3>
+              <p className="text-gray-400 text-sm">CRUD terms</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* LLM System */}
+        <h2 className="text-2xl font-bold text-white mb-4 mt-8">LLM System</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Link href="/llm-models">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="text-xl font-bold text-white mb-2">LLM Models</h3>
+              <p className="text-gray-400 text-sm">CRUD models</p>
+            </div>
+          </Link>
+
+          <Link href="/llm-providers">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🏢</div>
+              <h3 className="text-xl font-bold text-white mb-2">LLM Providers</h3>
+              <p className="text-gray-400 text-sm">CRUD providers</p>
+            </div>
+          </Link>
+
+          <Link href="/llm-prompt-chains">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🔗</div>
+              <h3 className="text-xl font-bold text-white mb-2">Prompt Chains</h3>
+              <p className="text-gray-400 text-sm">Read chains</p>
+            </div>
+          </Link>
+
+          <Link href="/llm-model-responses">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">💬</div>
+              <h3 className="text-xl font-bold text-white mb-2">Model Responses</h3>
+              <p className="text-gray-400 text-sm">Read responses</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Access Control */}
+        <h2 className="text-2xl font-bold text-white mb-4 mt-8">Access Control</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Link href="/allowed-signup-domains">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">🌐</div>
+              <h3 className="text-xl font-bold text-white mb-2">Allowed Domains</h3>
+              <p className="text-gray-400 text-sm">CRUD signup domains</p>
+            </div>
+          </Link>
+
+          <Link href="/whitelisted-emails">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition cursor-pointer hover:scale-105">
+              <div className="text-4xl mb-4">✉️</div>
+              <h3 className="text-xl font-bold text-white mb-2">Whitelisted Emails</h3>
+              <p className="text-gray-400 text-sm">CRUD email addresses</p>
             </div>
           </Link>
         </div>
