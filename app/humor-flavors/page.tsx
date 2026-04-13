@@ -28,7 +28,7 @@ export default async function HumorFlavorsPage() {
             <thead className="bg-white/5">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">ID</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Slug</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Description</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
@@ -38,7 +38,7 @@ export default async function HumorFlavorsPage() {
               {flavors?.map((flavor) => (
                 <tr key={flavor.id} className="hover:bg-white/5">
                   <td className="px-6 py-4 text-sm text-gray-400">{flavor.id}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">{flavor.name}</td>
+                  <td className="px-6 py-4 text-sm text-white font-semibold">{flavor.slug}</td>
                   <td className="px-6 py-4 text-sm text-gray-300">{flavor.description || '-'}</td>
                   <td className="px-6 py-4 text-sm text-gray-400">
                     {new Date(flavor.created_datetime_utc).toLocaleDateString()}
@@ -46,7 +46,7 @@ export default async function HumorFlavorsPage() {
                   <td className="px-6 py-4 text-sm">
                     <DuplicateFlavorButton 
                       flavorId={flavor.id} 
-                      flavorName={flavor.name}
+                      flavorSlug={flavor.slug}
                       flavorDescription={flavor.description}
                     />
                   </td>

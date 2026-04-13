@@ -5,25 +5,25 @@ import { useState } from "react"
 
 interface DuplicateFlavorButtonProps {
   flavorId: number
-  flavorName: string
+  flavorSlug: string
   flavorDescription: string | null
 }
 
 export default function DuplicateFlavorButton({ 
   flavorId, 
-  flavorName, 
+  flavorSlug, 
   flavorDescription 
 }: DuplicateFlavorButtonProps) {
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
   const [isOpen, setIsOpen] = useState(false)
-  const [newName, setNewName] = useState(`${flavorName} (Copy)`)
+  const [newSlug, setNewSlug] = useState(`${flavorSlug}-copy`)
   const [isDuplicating, setIsDuplicating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleDuplicate = async () => {
-    if (!newName.trim()) {
-      setError("Please enter a name for the duplicated flavor")
+    if (!newSlug.trim()) {
+      setError("Please enter a slug for the duplicated flavor")
       return
     }
 
@@ -40,7 +40,7 @@ export default function DuplicateFlavorButton({
       const { data: newFlavor, error: flavorError } = await supabase
         .from('humor_flavors')
         .insert({
-          name: newName.trim(),
+          slug: newSlug.trim(),
           description: flavorDescription,
           created_by_user_id: session.user.id,
           modified_by_user_id: session.user.id,
@@ -90,7 +90,7 @@ export default function DuplicateFlavorButton({
       // Success!
       setIsOpen(false)
       router.refresh()
-      alert(`Successfully duplicated "${flavorName}" as "${newName}" with ${originalSteps?.length || 0} steps!`)
+      alert(`Successfully duplicated "${flavorSlug}" as "${newSlug}" with ${originalSteps?.length || 0} steps!`)
 
     } catch (err: any) {
       console.error("Duplication error:", err)
@@ -116,21 +116,22 @@ export default function DuplicateFlavorButton({
             <h2 className="text-2xl font-bold text-white mb-4">Duplicate Flavor</h2>
             
             <p className="text-gray-400 mb-4">
-              Duplicating: <span className="text-white font-semibold">{flavorName}</span>
+              Duplicating: <span className="text-white font-semibold">{flavorSlug}</span>
             </p>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                New Flavor Name
+                New Flavor Slug
               </label>
               <input
                 type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                value={newSlug}
+                onChange={(e) => setNewSlug(e.target.value)}
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                placeholder="Enter new flavor name"
+                placeholder="e.g., my-flavor-copy"
                 disabled={isDuplicating}
               />
+              <p className="text-xs text-gray-500 mt-1">Use lowercase letters, numbers, and hyphens only</p>
             </div>
 
             {error && (
