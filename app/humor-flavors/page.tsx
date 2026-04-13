@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "../../lib/supabase/server"
 import Link from "next/link"
+import DuplicateFlavorButton from "./DuplicateFlavorButton"
 
 export const dynamic = "force-dynamic"
 
@@ -30,6 +31,7 @@ export default async function HumorFlavorsPage() {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Name</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Description</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
@@ -40,6 +42,13 @@ export default async function HumorFlavorsPage() {
                   <td className="px-6 py-4 text-sm text-gray-300">{flavor.description || '-'}</td>
                   <td className="px-6 py-4 text-sm text-gray-400">
                     {new Date(flavor.created_datetime_utc).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-sm">
+                    <DuplicateFlavorButton 
+                      flavorId={flavor.id} 
+                      flavorName={flavor.name}
+                      flavorDescription={flavor.description}
+                    />
                   </td>
                 </tr>
               ))}

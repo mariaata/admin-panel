@@ -30,6 +30,62 @@ export default async function DashboardPage() {
   const upvotes = voteData?.filter(v => v.vote_value === 1).length || 0
   const downvotes = voteData?.filter(v => v.vote_value === -1).length || 0
 
+  // ✅ NEW: Get top-rated captions
+  const { data: topCaptions } = await supabase
+    .from('captions')
+    .select(`
+      id,
+      content,
+      caption_votes (vote_value)
+    `)
+    .limit(100)
+
+  const captionsWithScores = topCaptions?.map(caption => {
+    const votes = caption.caption_votes || []
+    const score = votes.reduce((sum: number, v: any) => sum + (v.vote_value || 0), 0)
+    const totalVotes = votes.length
+    return {
+      id: caption.id,
+      content: caption.content,
+      score,
+      totalVotes,
+      upvotes: votes.filter((v: any) => v.vote_value === 1).length,
+      downvotes: votes.filter((v: any) => v.vote_value === -1).length
+    }
+  }).sort((a, b) => b.score - a.score).slice(0, 10) || []
+
+  // ✅ FIXED: Get most active users
+const { data: activeUsersData } = await supabase
+.from('caption_votes')
+.select('profile_id')
+
+const userVoteCount: Record<string, number> = {}
+activeUsersData?.forEach(vote => {
+if (vote.profile_id) {
+  userVoteCount[vote.profile_id] = (userVoteCount[vote.profile_id] || 0) + 1
+}
+})
+
+const topUserIds = Object.entries(userVoteCount)
+.sort(([, a], [, b]) => b - a)
+.slice(0, 5)
+.map(([userId, count]) => ({ userId, voteCount: count }))
+
+// Get user emails for display
+const { data: topUsersWithEmails } = await supabase
+.from('profiles')
+.select('id, email')
+.in('id', topUserIds.map(u => u.userId))
+
+const topUsers = topUserIds.map(user => {
+const profile = topUsersWithEmails?.find(p => p.id === user.userId)
+return {
+  userId: user.userId,
+  email: profile?.email || 'Unknown',
+  voteCount: user.voteCount
+}
+})
+
   const { data: recentImages } = await supabase
     .from('images')
     .select('url, created_datetime_utc')
@@ -77,6 +133,50 @@ export default async function DashboardPage() {
         </div>
 
         <StatsCharts upvotes={upvotes} downvotes={downvotes} />
+
+        {/* ✅ NEW: Top Rated Captions */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+          <h3 className="text-2xl font-bold text-white mb-4">🏆 Top Rated Captions</h3>
+          <div className="space-y-3">
+            {captionsWithScores.map((caption, index) => (
+              <div key={caption.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-2xl font-bold text-yellow-400">#{index + 1}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-green-400 font-semibold">👍 {caption.upvotes}</span>
+                        <span className="text-red-400 font-semibold">👎 {caption.downvotes}</span>
+                        <span className="text-blue-400 font-semibold">Score: {caption.score}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-300">{caption.content}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ✅ UPDATED: Most Active Voters */}
+<div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+  <h3 className="text-2xl font-bold text-white mb-4">🔥 Most Active Voters</h3>
+  {topUsers.length > 0 ? (
+    <div className="space-y-2">
+      {topUsers.map((user, index) => (
+        <div key={user.userId} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-bold text-yellow-400">#{index + 1}</span>
+            <span className="text-gray-300">{user.email}</span>
+          </div>
+          <span className="text-white font-semibold">{user.voteCount} votes</span>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-400">No votes yet</p>
+  )}
+</div>
 
         {/* Main Navigation */}
         <h2 className="text-2xl font-bold text-white mb-4 mt-8">Content Management</h2>
