@@ -14,13 +14,27 @@ export default function CreateWhitelistedEmailPage() {
     e.preventDefault()
     setLoading(true)
 
-    await supabase.from('whitelisted_email_addresses').insert({
-      email_address: email,
-      created_datetime_utc: new Date().toISOString()
-    })
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user?.id) {
+        throw new Error("Not authenticated")
+      }
 
-    setLoading(false)
-    router.push('/whitelisted-emails')
+      await supabase.from('whitelisted_emails').insert({
+        email: email,
+        created_by_user_id: session.user.id,
+        modified_by_user_id: session.user.id,
+        created_datetime_utc: new Date().toISOString(),
+        modified_datetime_utc: new Date().toISOString()
+      })
+
+      router.push('/whitelisted-emails')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Failed to add email')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

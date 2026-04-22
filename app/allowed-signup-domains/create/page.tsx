@@ -14,13 +14,27 @@ export default function CreateAllowedDomainPage() {
     e.preventDefault()
     setLoading(true)
 
-    await supabase.from('allowed_signup_domains').insert({
-      domain,
-      created_datetime_utc: new Date().toISOString()
-    })
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user?.id) {
+        throw new Error("Not authenticated")
+      }
 
-    setLoading(false)
-    router.push('/allowed-signup-domains')
+      await supabase.from('allowed_signup_domains').insert({
+        domain: domain,
+        created_by_user_id: session.user.id,
+        modified_by_user_id: session.user.id,
+        created_datetime_utc: new Date().toISOString(),
+        modified_datetime_utc: new Date().toISOString()
+      })
+
+      router.push('/allowed-signup-domains')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Failed to add domain')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -34,13 +48,13 @@ export default function CreateAllowedDomainPage() {
 
         <form onSubmit={handleSubmit} className="bg-white/5 border border-white/10 rounded-2xl p-8">
           <div className="mb-6">
-            <label className="block text-white font-semibold mb-2">Domain</label>
+            <label className="block text-white font-semibold mb-2">Domain (e.g., barnard.edu)</label>
             <input
               type="text"
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
               required
-              placeholder="e.g., barnard.edu"
+              placeholder="example.com"
               className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white"
             />
           </div>

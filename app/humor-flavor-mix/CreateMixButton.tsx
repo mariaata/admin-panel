@@ -1,20 +1,26 @@
 "use client"
-import { createSupabaseBrowserClient } from "../../../lib/supabase/client"
+import { createSupabaseBrowserClient } from "../../lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-export default function CreateProviderButton() {
+interface Flavor {
+  id: number
+  slug: string
+  description: string | null
+}
+
+export default function CreateMixButton({ flavors }: { flavors: Flavor[] }) {
   const router = useRouter()
   const supabase = createSupabaseBrowserClient()
   const [isOpen, setIsOpen] = useState(false)
-  const [name, setName] = useState("")
-  const [apiEndpoint, setApiEndpoint] = useState("")
+  const [flavorId, setFlavorId] = useState("")
+  const [captionCount, setCaptionCount] = useState(1)
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleCreate = async () => {
-    if (!name.trim()) {
-      setError("Please enter a provider name")
+    if (!flavorId) {
+      setError("Please select a flavor")
       return
     }
 
@@ -28,10 +34,10 @@ export default function CreateProviderButton() {
       }
 
       const { error: insertError } = await supabase
-        .from('llm_providers')
+        .from('humor_flavor_mix')
         .insert({
-          name: name.trim(),
-          api_endpoint: apiEndpoint.trim() || null,
+          humor_flavor_id: parseInt(flavorId),
+          caption_count: captionCount,
           created_by_user_id: session.user.id,
           modified_by_user_id: session.user.id,
           created_datetime_utc: new Date().toISOString(),
@@ -41,12 +47,12 @@ export default function CreateProviderButton() {
       if (insertError) throw insertError
 
       setIsOpen(false)
-      setName("")
-      setApiEndpoint("")
+      setFlavorId("")
+      setCaptionCount(1)
       router.refresh()
     } catch (err: any) {
       console.error("Create error:", err)
-      setError(err.message || "Failed to add provider")
+      setError(err.message || "Failed to add mix")
     } finally {
       setIsCreating(false)
     }
@@ -58,40 +64,46 @@ export default function CreateProviderButton() {
         onClick={() => setIsOpen(true)}
         className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
       >
-        + Add Provider
+        + Add Mix
       </button>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-white mb-4">Add LLM Provider</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Add Flavor Mix</h2>
             
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Provider Name
+                Select Flavor
               </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+              <select
+                value={flavorId}
+                onChange={(e) => setFlavorId(e.target.value)}
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-green-500"
-                placeholder="e.g., OpenAI, Anthropic"
                 disabled={isCreating}
-              />
+              >
+                <option value="">Choose a flavor...</option>
+                {flavors.map((flavor) => (
+                  <option key={flavor.id} value={flavor.id}>
+                    {flavor.slug}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                API Endpoint (optional)
+                Caption Count
               </label>
               <input
-                type="text"
-                value={apiEndpoint}
-                onChange={(e) => setApiEndpoint(e.target.value)}
+                type="number"
+                value={captionCount}
+                onChange={(e) => setCaptionCount(parseInt(e.target.value))}
+                min="1"
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-green-500"
-                placeholder="https://api.example.com/v1"
                 disabled={isCreating}
               />
+              <p className="text-xs text-gray-500 mt-1">Number of captions to generate for this flavor</p>
             </div>
 
             {error && (
@@ -106,7 +118,7 @@ export default function CreateProviderButton() {
                 disabled={isCreating}
                 className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                {isCreating ? "Adding..." : "Add Provider"}
+                {isCreating ? "Adding..." : "Add Mix"}
               </button>
               <button
                 onClick={() => setIsOpen(false)}

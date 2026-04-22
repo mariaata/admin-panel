@@ -8,7 +8,7 @@ export default async function WhitelistedEmailsPage() {
   const supabase = await createSupabaseServerClient()
   
   const { data: emails } = await supabase
-    .from('whitelisted_email_addresses')
+    .from('whitelisted_emails')
     .select('*')
     .order('created_datetime_utc', { ascending: false })
 
@@ -33,23 +33,33 @@ export default async function WhitelistedEmailsPage() {
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email Address</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {emails?.map((email) => (
-                <tr key={email.id} className="hover:bg-white/5">
-                  <td className="px-6 py-4 text-sm text-white font-semibold">{email.email_address}</td>
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {new Date(email.created_datetime_utc).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    <DeleteEmailButton emailId={email.id} />
+              {emails && emails.length > 0 ? (
+                emails.map((email) => (
+                  <tr key={email.id} className="hover:bg-white/5">
+                    <td className="px-6 py-4 text-sm text-gray-400">{email.id}</td>
+                    <td className="px-6 py-4 text-sm text-white font-semibold">{email.email_address}</td>
+                    <td className="px-6 py-4 text-sm text-gray-400">
+                      {new Date(email.created_datetime_utc).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <DeleteEmailButton emailId={email.id} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
+                    No whitelisted emails yet. Click "Add Email" to create one.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

@@ -28,7 +28,7 @@ export default async function HumorFlavorStepsPage() {
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">ID</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Flavor ID</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Step Number</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Order</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Description</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
               </tr>
@@ -38,7 +38,7 @@ export default async function HumorFlavorStepsPage() {
                 <tr key={step.id} className="hover:bg-white/5">
                   <td className="px-6 py-4 text-sm text-gray-400">{step.id}</td>
                   <td className="px-6 py-4 text-sm text-gray-400">{step.humor_flavor_id}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">{step.step_number}</td>
+                  <td className="px-6 py-4 text-sm text-white font-semibold">{step.order_by}</td>
                   <td className="px-6 py-4 text-sm text-gray-300">{step.description || '-'}</td>
                   <td className="px-6 py-4 text-sm text-gray-400">
                     {new Date(step.created_datetime_utc).toLocaleDateString()}

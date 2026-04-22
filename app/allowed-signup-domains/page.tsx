@@ -4,7 +4,7 @@ import DeleteDomainButton from "./DeleteDomainButton"
 
 export const dynamic = "force-dynamic"
 
-export default async function AllowedSignupDomainsPage() {
+export default async function AllowedDomainsPage() {
   const supabase = await createSupabaseServerClient()
   
   const { data: domains } = await supabase
@@ -40,18 +40,26 @@ export default async function AllowedSignupDomainsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {domains?.map((domain) => (
-                <tr key={domain.id} className="hover:bg-white/5">
-                  <td className="px-6 py-4 text-sm text-gray-400">{domain.id}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">{domain.domain}</td>
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {new Date(domain.created_datetime_utc).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    <DeleteDomainButton domainId={domain.id} />
+              {domains && domains.length > 0 ? (
+                domains.map((domain) => (
+                  <tr key={domain.id} className="hover:bg-white/5">
+                    <td className="px-6 py-4 text-sm text-gray-400">{domain.id}</td>
+                    <td className="px-6 py-4 text-sm text-white font-semibold">{domain.domain}</td>
+                    <td className="px-6 py-4 text-sm text-gray-400">
+                      {new Date(domain.created_datetime_utc).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <DeleteDomainButton domainId={domain.id} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="px-6 py-8 text-center text-gray-400">
+                    No allowed domains yet. Click "Add Domain" to create one.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

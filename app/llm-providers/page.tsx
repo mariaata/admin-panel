@@ -23,7 +23,7 @@ export default async function LLMProvidersPage() {
             href="/llm-providers/create"
             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
           >
-            + Create Provider
+            + Add Provider
           </Link>
         </div>
 
@@ -41,19 +41,29 @@ export default async function LLMProvidersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {providers?.map((provider) => (
-                <tr key={provider.id} className="hover:bg-white/5">
-                  <td className="px-6 py-4 text-sm text-gray-400">{provider.id}</td>
-                  <td className="px-6 py-4 text-sm text-white font-semibold">{provider.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{provider.api_endpoint || '-'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {new Date(provider.created_datetime_utc).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    <DeleteProviderButton providerId={provider.id} />
+              {providers && providers.length > 0 ? (
+                providers.map((provider) => (
+                  <tr key={provider.id} className="hover:bg-white/5">
+                    <td className="px-6 py-4 text-sm text-gray-400">{provider.id}</td>
+                    <td className="px-6 py-4 text-sm text-white font-semibold">{provider.name || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-300 font-mono text-xs">
+                      {provider.api_endpoint || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-400">
+                      {new Date(provider.created_datetime_utc).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <DeleteProviderButton providerId={provider.id} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                    No providers yet. Click "Add Provider" to create one.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

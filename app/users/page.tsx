@@ -27,8 +27,8 @@ export default async function UsersPage() {
             <thead className="bg-white/5">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Full Name</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Username</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">First Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Last Name</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Superadmin</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Created</th>
               </tr>
@@ -37,8 +37,8 @@ export default async function UsersPage() {
               {profiles?.map((profile) => (
                 <tr key={profile.id} className="hover:bg-white/5">
                   <td className="px-6 py-4 text-sm text-white">{profile.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{profile.full_name || '-'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{profile.username || '-'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-300">{profile.first_name || '-'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-300">{profile.last_name || '-'}</td>
                   <td className="px-6 py-4 text-sm">
                     {profile.is_superadmin ? (
                       <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">
